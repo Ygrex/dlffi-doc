@@ -1,0 +1,144 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Basic usage &mdash; dlffi v1.0.0 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0.0',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="dlffi v1.0.0 documentation" href="index.html" />
+    <link rel="prev" title="Package" href="package.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="package.html" title="Package"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">dlffi v1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="basic-usage">
+<h1>Basic usage<a class="headerlink" href="#basic-usage" title="Permalink to this headline">¶</a></h1>
+<p>The simplest case is when few functions are required from some C library.</p>
+<p>These functions can be used strictly, once they are loaded.</p>
+<p>Let&#8217;s see an example:</p>
+<div class="highlight-lua"><div class="highlight"><pre><span class="c1">-- include the module</span>
+<span class="kd">local</span> <span class="n">dlffi</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">dlffi&quot;</span><span class="p">);</span>
+<span class="nb">assert</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">dlffi&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;</span><span class="s">table&quot;</span><span class="p">);</span>
+
+<span class="c1">-- int puts(const char *s)</span>
+<span class="kd">local</span> <span class="n">puts</span><span class="p">,</span> <span class="n">e</span> <span class="o">=</span> <span class="n">dlffi</span><span class="p">.</span><span class="n">load</span><span class="p">(</span>
+        <span class="s2">&quot;</span><span class="s">libc.so.6&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;</span><span class="s">puts&quot;</span><span class="p">,</span>
+        <span class="n">dlffi</span><span class="p">.</span><span class="n">ffi_type_sint</span><span class="p">,</span>
+        <span class="p">{</span> <span class="n">dlffi</span><span class="p">.</span><span class="n">ffi_type_pointer</span> <span class="p">}</span>
+<span class="p">);</span>
+<span class="c1">-- make sure there&#39;s no error</span>
+<span class="nb">assert</span><span class="p">(</span><span class="n">puts</span><span class="p">,</span> <span class="n">e</span><span class="p">);</span>
+<span class="c1">-- invoke the loaded function</span>
+<span class="kd">local</span> <span class="n">r</span><span class="p">,</span> <span class="n">e</span> <span class="o">=</span> <span class="n">puts</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">puts() from libc.so.6&quot;</span><span class="p">);</span>
+<span class="c1">-- output the return value and error if any</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">e</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>the output:</p>
+<div class="highlight-lua"><div class="highlight"><pre><span class="n">puts</span><span class="p">()</span> <span class="n">from</span> <span class="n">libc</span><span class="p">.</span><span class="n">so</span><span class="mf">.6</span>
+<span class="mi">22</span>      <span class="kc">nil</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="notes">
+<h1>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h1>
+<p><strong>require(&#8220;dlffi&#8221;)</strong> must return the module&#8217;s object (table)
+if no errors occured.</p>
+<p><strong>dlffi.load()</strong> returns the loaded symbol handler.
+In case of error it returns <em>nil</em> and error description (string)
+as the second value. If there&#8217;s a memory allocation error (ENOMEM),
+the second value will be <em>nil</em> too.</p>
+<p>Calling the loaded symbol normally returns the value according to the
+specified profile, as expected, e.g. <strong>puts()</strong> returns <em>int</em>.
+The <em>nil</em> will be returned for <em>void</em> functions.</p>
+<p>If error occured, the first value will be nil and the error description
+will be the second returned value. The later will be <em>nil</em> as well in case
+of heavy memory limitations.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href="#">Basic usage</a></li>
+<li><a class="reference external" href="#notes">Notes</a></li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="package.html"
+                                  title="previous chapter">Package</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="_sources/usage.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="package.html" title="Package"
+             >previous</a> |</li>
+        <li><a href="index.html">dlffi v1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2010, Igor Bogomazov.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.6.
+    </div>
+  </body>
+</html>
